@@ -5,7 +5,12 @@
  */
 namespace Magento\Migration\Code\Processor;
 
-class TokenHelperTest extends \PHPUnit\Framework\TestCase
+use Magento\Migration\Code\Processor\Mage\MageFunction\ArgumentFactory;
+use Magento\Migration\Code\Processor\Mage\MageFunction\Argument;
+use Magento\Migration\Logger\Logger;
+use PHPUnit\Framework\TestCase;
+
+class TokenHelperTest extends TestCase
 {
     /**
      * @var \Magento\Migration\Code\Processor\TokenHelper
@@ -53,61 +58,61 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->argumentFactoryMock = $this->getMockBuilder(
-            '\Magento\Migration\Code\Processor\Mage\MageFunction\ArgumentFactory'
+            ArgumentFactory::class
         )->setMethods(['create'])
             ->getMock();
         $this->argumentFactoryMock->expects($this->any())
             ->method('create')
             ->willReturnCallback(
                 function () {
-                    return new \Magento\Migration\Code\Processor\Mage\MageFunction\Argument();
+                    return new Argument();
                 }
             );
         $this->tokenFactoryMock = $this->getMockBuilder(
-            '\Magento\Migration\Code\Processor\TokenArgumentFactory'
+            TokenArgumentFactory::class
         )->setMethods(['create'])
             ->getMock();
         $this->tokenFactoryMock->expects($this->any())
             ->method('create')
             ->willReturnCallback(
                 function () {
-                    return new \Magento\Migration\Code\Processor\TokenArgument();
+                    return new TokenArgument();
                 }
             );
 
 
         $this->tokenCollectionFactoryMock = $this->getMockBuilder(
-            '\Magento\Migration\Code\Processor\TokenArgumentCollectionFactory'
+            TokenArgumentCollectionFactory::class
         )->setMethods(['create'])
             ->getMock();
         $this->tokenCollectionFactoryMock->expects($this->any())
             ->method('create')
             ->willReturnCallback(
                 function () {
-                    return new \Magento\Migration\Code\Processor\TokenArgumentCollection();
+                    return new TokenArgumentCollection();
                 }
             );
 
 
         $this->callCollectionFactoryMock = $this->getMockBuilder(
-            '\Magento\Migration\Code\Processor\CallArgumentCollectionFactory'
+            CallArgumentCollectionFactory::class
         )->setMethods(['create'])
             ->getMock();
         $this->callCollectionFactoryMock->expects($this->any())
             ->method('create')
             ->willReturnCallback(
                 function () {
-                    return new \Magento\Migration\Code\Processor\CallArgumentCollection();
+                    return new CallArgumentCollection();
                 }
             );
 
-        $this->loggerMock = $this->getMockBuilder('\Magento\Migration\Logger\Logger')
+        $this->loggerMock = $this->getMockBuilder(Logger::class)
             ->disableOriginalConstructor()->getMock();
 
-        $this->obj = new \Magento\Migration\Code\Processor\TokenHelper(
+        $this->obj = new TokenHelper(
             $this->loggerMock,
             $this->argumentFactoryMock,
             $this->tokenFactoryMock,
@@ -116,7 +121,7 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testGetNextTokenIndex()
+    public function testGetNextTokenIndex(): void
     {
         $tokens = [
             [T_STRING, 'Mage', 1],
@@ -131,7 +136,7 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($this->obj->getNextTokenIndex($tokens, 0, 2));
     }
 
-    public function testSkipFunctionCall()
+    public function testSkipFunctionCall(): void
     {
         $startingIndex = $this->getTestStartIndex(self::$tokens, 'testSkipFunctionCall');
         $increment = 23;
@@ -142,13 +147,13 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
     /**
      * @expectedException \Exception
      */
-    public function testSkipFunctionCallNoEnd()
+    public function testSkipFunctionCallNoEnd(): void
     {
         $startingIndex = $this->getTestStartIndex(self::$tokens, 'testSkipFunctionCallNoEnd');
         $index = $this->obj->skipMethodCall(self::$tokens, $startingIndex);
     }
 
-    public function testSkipBlock()
+    public function testSkipBlock(): void
     {
         $startingIndex = $this->getTestStartIndex(self::$tokens, 'testSkipBlock');
         $increment = 27;
@@ -159,13 +164,13 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
     /**
      * @expectedException \Exception
      */
-    public function testSkipBlockMismatched()
+    public function testSkipBlockMismatched(): void
     {
         $startingIndex = $this->getTestStartIndex(self::$tokens, 'testSkipBlockMismatched');
         $index = $this->obj->skipBlock(self::$tokens, $startingIndex);
     }
 
-    public function testGetNextIndexOfSimpleToken()
+    public function testGetNextIndexOfSimpleToken(): void
     {
         $startingIndex = $this->getTestStartIndex(self::$tokens, 'testGetNextIndexOfSimpleToken');
         $increment = 8;
@@ -176,13 +181,13 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
     /**
      * @expectedException \Exception
      */
-    public function testGetNextIndexOfSimpleTokenNotFound()
+    public function testGetNextIndexOfSimpleTokenNotFound(): void
     {
         $startingIndex = $this->getTestStartIndex(self::$tokens, 'testGetNextIndexOfSimpleTokenNotFound');
         $index = $this->obj->getNextIndexOfSimpleToken(self::$tokens, $startingIndex, ')');
     }
 
-    public function testGetNextIndexOfTokenType()
+    public function testGetNextIndexOfTokenType(): void
     {
         $startingIndex = $this->getTestStartIndex(self::$tokens, 'testGetNextIndexOfTokenType');
         $increment = 9;
@@ -195,7 +200,7 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($startingIndex + $increment, $index);
     }
 
-    public function testGetNextIndexOfTokenTypeNotFound()
+    public function testGetNextIndexOfTokenTypeNotFound(): void
     {
         $startingIndex = $this->getTestStartIndex(self::$tokens, 'testGetNextIndexOfTokenType');
         $index = $this->obj->getNextIndexOfTokenType(
@@ -207,7 +212,7 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($index);
     }
 
-    public function testGetPrevIndexOfTokenType()
+    public function testGetPrevIndexOfTokenType(): void
     {
         $startingIndex = $this->getTestStartIndex(self::$tokens, 'testGetPrevIndexOfTokenType');
         $increment = -9;
@@ -220,7 +225,7 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($startingIndex + $increment, $index);
     }
 
-    public function testGetPrevIndexOfTokenTypeNotFound()
+    public function testGetPrevIndexOfTokenTypeNotFound(): void
     {
         $startingIndex = $this->getTestStartIndex(self::$tokens, 'testGetNextIndexOfTokenType');
         $index = $this->obj->getPrevIndexOfTokenType(
@@ -232,11 +237,11 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($index);
     }
 
-    public function testGetFunctionArguments()
+    public function testGetFunctionArguments(): void
     {
         $startingIndex = $this->getTestStartIndex(self::$tokens, 'testGetFunctionArguments');
         $arguments = $this->obj->getFunctionArguments(self::$tokens, $startingIndex);
-        $this->assertEquals(4, count($arguments));
+        $this->assertCount(4, $arguments);
 
         $this->assertNull($arguments[0]->getType());
         $this->assertEquals('$input1', $arguments[0]->getName());
@@ -255,14 +260,14 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($arguments[3]->isOptional());
     }
 
-    public function testGetFunctionArgumentsEmpty()
+    public function testGetFunctionArgumentsEmpty(): void
     {
         $startingIndex = $this->getTestStartIndex(self::$tokens, 'testGetFunctionArgumentsEmpty');
         $arguments = $this->obj->getFunctionArguments(self::$tokens, $startingIndex);
         $this->assertEmpty($arguments);
     }
 
-    public function testGetFunctionStartingIndex()
+    public function testGetFunctionStartingIndex(): void
     {
         $startingIndex = $this->getTestStartIndex(self::$tokens, 'testGetFunctionStartingIndex');
         for (; $startingIndex < count(self::$tokens); $startingIndex++) {
@@ -279,7 +284,7 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($startingIndex + $increment, $index);
     }
 
-    public function testGetFunctionStartingIndexNoDocComment()
+    public function testGetFunctionStartingIndexNoDocComment(): void
     {
         $startingIndex = $this->getTestStartIndex(self::$tokens, 'testGetFunctionStartingIndexNoDocComment');
         for (; $startingIndex < count(self::$tokens); $startingIndex++) {
@@ -296,7 +301,7 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($startingIndex + $increment, $index);
     }
 
-    public function testGetNextLineIndex()
+    public function testGetNextLineIndex(): void
     {
         $startingIndex = $this->getTestStartIndex(self::$tokens, 'testGetNextLineIndex');
 
@@ -310,7 +315,7 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
 
     }
 
-    public function testGetPrevLineIndex()
+    public function testGetPrevLineIndex(): void
     {
         $startingIndex = $this->getTestStartIndex(self::$tokens, 'testGetPrevLineIndex');
 
@@ -324,7 +329,7 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
 
     }
 
-    public function testGetCallArguments()
+    public function testGetCallArguments(): void
     {
         //$this->function1($this, 'abc', array ( 'a','b' ), null);
         $startingIndex = $this->getTestStartIndex(self::$tokens, 'testGetCallArguments');
@@ -334,34 +339,34 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
 
         $argument = $argumentCollection->getArgument(1);
         $tokens = $argument->getTokens();
-        $this->assertEquals(1, count($tokens));
+        $this->assertCount(1, $tokens);
         $firstToken = array_shift($tokens);
         $this->assertEquals(T_VARIABLE, $firstToken->getToken()[0]);
         $this->assertEquals('$this', $firstToken->getToken()[1]);
 
         $argument = $argumentCollection->getArgument(2);
         $tokens = $argument->getTokens();
-        $this->assertEquals(1, count($tokens));
+        $this->assertCount(1, $tokens);
         $firstToken = array_shift($tokens);
         $this->assertEquals(T_CONSTANT_ENCAPSED_STRING, $firstToken->getToken()[0]);
         $this->assertEquals("'abc'", $firstToken->getToken()[1]);
 
         $argument = $argumentCollection->getArgument(3);
         $tokens = $argument->getTokens();
-        $this->assertEquals(6, count($tokens));
+        $this->assertCount(6, $tokens);
         $firstToken = array_shift($tokens);
         $this->assertEquals(T_ARRAY, $firstToken->getToken()[0]);
         $this->assertEquals('array', $firstToken->getToken()[1]);
 
         $argument = $argumentCollection->getArgument(4);
         $tokens = $argument->getTokens();
-        $this->assertEquals(1, count($tokens));
+        $this->assertCount(1, $tokens);
         $firstToken = array_shift($tokens);
         $this->assertEquals(T_STRING, $firstToken->getToken()[0]);
         $this->assertEquals('null', $firstToken->getToken()[1]);
     }
 
-    public function testGetCallArgumentsNoTrim()
+    public function testGetCallArgumentsNoTrim(): void
     {
         //$this->function1($this, 'abc', array ( 'a','b' ), null);
         $startingIndex = $this->getTestStartIndex(self::$tokens, 'testGetCallArguments');
@@ -371,14 +376,14 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
 
         $argument = $argumentCollection->getArgument(1);
         $tokens = $argument->getTokens();
-        $this->assertEquals(1, count($tokens));
+        $this->assertCount(1, $tokens);
         $firstToken = array_shift($tokens);
         $this->assertEquals(T_VARIABLE, $firstToken->getToken()[0]);
         $this->assertEquals('$this', $firstToken->getToken()[1]);
 
         $argument = $argumentCollection->getArgument(2);
         $tokens = $argument->getTokens();
-        $this->assertEquals(2, count($tokens));
+        $this->assertCount(2, $tokens);
         $firstToken = array_shift($tokens);
         $this->assertEquals(T_WHITESPACE, $firstToken->getToken()[0]);
         $secondToken = array_shift($tokens);
@@ -387,7 +392,7 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
 
         $argument = $argumentCollection->getArgument(3);
         $tokens = $argument->getTokens();
-        $this->assertEquals(10, count($tokens));
+        $this->assertCount(10, $tokens);
         $firstToken = array_shift($tokens);
         $this->assertEquals(T_WHITESPACE, $firstToken->getToken()[0]);
         $secondToken = array_shift($tokens);
@@ -396,7 +401,7 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
 
         $argument = $argumentCollection->getArgument(4);
         $tokens = $argument->getTokens();
-        $this->assertEquals(3, count($tokens));
+        $this->assertCount(3, $tokens);
         $firstToken = array_shift($tokens);
         $this->assertEquals(T_WHITESPACE, $firstToken->getToken()[0]);
         $secondToken = array_shift($tokens);
@@ -404,7 +409,7 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('null', $secondToken->getToken()[1]);
     }
 
-    public function testGetCallArgumentsEmpty()
+    public function testGetCallArgumentsEmpty(): void
     {
         //$this->function3( );
         $startingIndex = $this->getTestStartIndex(self::$tokens, 'testGetCallArgumentsEmpty');
@@ -414,7 +419,7 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
 
     }
 
-    public function testGetCallArgumentsOneArgument()
+    public function testGetCallArgumentsOneArgument(): void
     {
         //$this->function1('abc' );
         $startingIndex = $this->getTestStartIndex(self::$tokens, 'testGetCallArgumentsOneArgument');
@@ -423,7 +428,7 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(1, $argumentCollection->getCount());
     }
 
-    public function testReplaceCallArgumentsTokens()
+    public function testReplaceCallArgumentsTokens(): void
     {
         $fileContent = file_get_contents(__DIR__ . '/_files/tokenHelperTest.file');
         $tokens = token_get_all($fileContent);
@@ -436,8 +441,8 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
         //$this->function1($this, 'abc', array ( 'a','b' ), null);
         $startingIndex = $this->getTestStartIndex($tokens, 'testReplaceCallArgumentsTokens');
 
-        $replacementTokens = new \Magento\Migration\Code\Processor\TokenArgumentCollection();
-        $token = new \Magento\Migration\Code\Processor\TokenArgument();
+        $replacementTokens = new TokenArgumentCollection();
+        $token = new TokenArgument();
         $token->setName('hello');
         $replacementTokens->addToken($token, 0);
         $this->obj->replaceCallArgumentsTokens($tokens, $startingIndex, $replacementTokens);
@@ -448,7 +453,7 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('hello', $argument->getString());
     }
 
-    public function testReplaceCallArgumentsTokensNoArgument()
+    public function testReplaceCallArgumentsTokensNoArgument(): void
     {
         $fileContent = file_get_contents(__DIR__ . '/_files/tokenHelperTest.file');
         $tokens = token_get_all($fileContent);
@@ -463,8 +468,8 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
             ->method('warn');
         $startingIndex = $this->getTestStartIndex($tokens, 'testReplaceCallArgumentsTokensNoArgument');
 
-        $replacementTokens = new \Magento\Migration\Code\Processor\TokenArgumentCollection();
-        $token = new \Magento\Migration\Code\Processor\TokenArgument();
+        $replacementTokens = new TokenArgumentCollection();
+        $token = new TokenArgument();
         $token->setName('hello');
         $replacementTokens->addToken($token, 0);
         $this->obj->replaceCallArgumentsTokens($tokens, $startingIndex, $replacementTokens);
@@ -477,7 +482,7 @@ class TokenHelperTest extends \PHPUnit\Framework\TestCase
      * @param string $marker
      * @return int|null
      */
-    protected function getTestStartIndex($tokens, $marker)
+    protected function getTestStartIndex($tokens, $marker): ?int
     {
         $marker = '//' . $marker;
         $count = count($tokens);

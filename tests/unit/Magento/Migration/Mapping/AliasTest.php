@@ -5,7 +5,12 @@
  */
 namespace Magento\Migration\Code;
 
-class AliasTest extends \PHPUnit\Framework\TestCase
+use Magento\Migration\Mapping\Context;
+use Magento\Migration\Logger\Logger;
+use Magento\Migration\Mapping\Alias;
+use PHPUnit\Framework\TestCase;
+
+class AliasTest extends TestCase
 {
     /**
      * @var \Magento\Migration\Mapping\Alias
@@ -22,22 +27,22 @@ class AliasTest extends \PHPUnit\Framework\TestCase
      */
     protected $loggerMock;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->contextMock = $this->getMockBuilder(
-            '\Magento\Migration\Mapping\Context'
+            Context::class
         )->disableOriginalConstructor()->getMock();
 
-        $this->loggerMock = $this->getMockBuilder('\Magento\Migration\Logger\Logger')
+        $this->loggerMock = $this->getMockBuilder(Logger::class)
             ->disableOriginalConstructor()->getMock();
 
-        $this->obj = new \Magento\Migration\Mapping\Alias(
+        $this->obj = new Alias(
             $this->loggerMock,
             $this->contextMock
         );
     }
 
-    public function testMapAliasNoM1BaseDir()
+    public function testMapAliasNoM1BaseDir(): void
     {
         $this->contextMock->expects($this->once())
             ->method('getM1BaseDir')
@@ -46,7 +51,7 @@ class AliasTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('Mage_Tax_Helper', $this->obj->mapAlias('tax', 'helper'));
     }
 
-    public function testMapAlias()
+    public function testMapAlias(): void
     {
         $baseDir = __DIR__ . '/_files/alias_test';
         $this->contextMock->expects($this->exactly(3))

@@ -5,6 +5,8 @@
  */
 namespace Magento\Migration\Code;
 
+use Magento\Migration\Logger\Logger;
+
 class ConverterTest extends TestCase
 {
     /**
@@ -26,18 +28,18 @@ class ConverterTest extends TestCase
      */
     protected $loggerMock;
 
-    public function setUp()
+    protected function setUp(): void
     {
-        $this->processorMock = $this->getMockBuilder('Magento\Migration\Code\ProcessorInterface')
+        $this->processorMock = $this->getMockBuilder(ProcessorInterface::class)
             ->getMockForAbstractClass();
-        $this->splitterMock = $this->getMockBuilder('Magento\Migration\Code\SplitterInterface')
+        $this->splitterMock = $this->getMockBuilder(SplitterInterface::class)
             ->getMockForAbstractClass();
-        $this->loggerMock = $this->getMockBuilder('\Magento\Migration\Logger\Logger')
+        $this->loggerMock = $this->getMockBuilder(Logger::class)
             ->disableOriginalConstructor()->getMock();
 
         $tokenHelper = $this->setupTokenHelper($this->loggerMock);
 
-        $this->obj = new \Magento\Migration\Code\Converter(
+        $this->obj = new Converter(
             [$this->processorMock],
             [$this->splitterMock],
             $tokenHelper,
@@ -45,7 +47,7 @@ class ConverterTest extends TestCase
         );
     }
 
-    public function testConvert()
+    public function testConvert(): void
     {
         $content = file_get_contents(__DIR__ . '/_files/test.php');
 

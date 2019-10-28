@@ -5,12 +5,20 @@
  */
 namespace Magento\Migration\Code;
 
-use Magento\Migration\Code\ModuleMigration;
+use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
+use Magento\Migration\Logger\Logger;
+use Magento\Migration\Code\ModuleMigration\ModuleFileExtractorFactory;
+use Magento\Migration\Code\ModuleMigration\ModuleFileCopierFactory;
+use Magento\Migration\Utility\M1\ModuleEnablerConfigFactory;
+use Magento\Migration\Code\ModuleMigration\ModuleFileCopier;
+use Magento\Migration\Code\ModuleMigration\ModuleFileExtractor;
+use Magento\Migration\Utility\M1\ModuleEnablerConfig;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class ModuleMigrationTest
  */
-class ModuleMigrationTest extends \PHPUnit\Framework\TestCase
+class ModuleMigrationTest extends TestCase
 {
     /**
      * @var \Magento\Migration\Code\ModuleMigration
@@ -49,26 +57,22 @@ class ModuleMigrationTest extends \PHPUnit\Framework\TestCase
     /**
      * Setup the test
      */
-    protected function setUp()
+    protected function setUp(): void
     {
-        $this->objectManager = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
+        $this->objectManager = new ObjectManager($this);
 
-        $className = '\Magento\Migration\Logger\Logger';
-        $this->logger = $this->getMockBuilder($className)->disableOriginalConstructor()->getMock();
+        $this->logger = $this->getMockBuilder(Logger::class)->disableOriginalConstructor()->getMock();
 
-        $className = '\Magento\Migration\Code\ModuleMigration\ModuleFileExtractorFactory';
-        $this->moduleFileExtractorFactory = $this->getMockBuilder($className)->setMethods(['create'])->getMock();
+        $this->moduleFileExtractorFactory = $this->getMockBuilder(ModuleFileExtractorFactory::class)->setMethods(['create'])->getMock();
 
-        $className = '\Magento\Migration\Code\ModuleMigration\ModuleFileCopierFactory';
-        $this->moduleFileCopierFactory = $this->getMockBuilder($className)->setMethods(['create'])->getMock();
+        $this->moduleFileCopierFactory = $this->getMockBuilder(ModuleFileCopierFactory::class)->setMethods(['create'])->getMock();
 
-        $className = '\Magento\Migration\Utility\M1\ModuleEnablerConfigFactory';
-        $this->moduleEnablerConfigFactory = $this->getMockBuilder($className)->setMethods(['create'])->getMock();
+        $this->moduleEnablerConfigFactory = $this->getMockBuilder(ModuleEnablerConfigFactory::class)->setMethods(['create'])->getMock();
 
         $this->m2Path = '/path/to/m2';
 
         $this->model = $this->objectManager->getObject(
-            '\Magento\Migration\Code\ModuleMigration',
+            ModuleMigration::class,
             [
                 'logger' => $this->logger,
                 'moduleFileExtractorFactory' => $this->moduleFileExtractorFactory,
@@ -85,19 +89,16 @@ class ModuleMigrationTest extends \PHPUnit\Framework\TestCase
      * @param string $codePool
      * test MoveModuleFiles
      */
-    public function testMoveModuleFiles($namespaces, $codePool)
+    public function testMoveModuleFiles(array $namespaces, string $codePool): void
     {
         $arrayBlockFiles = ['Block' => [$this->m2Path . '/app/code/Vendor1/Module1/Block/file1']];
         $arrayFrontendXMLFiles = ['frontendXml' => [$this->m2Path . '/app/code/Vendor1/Module1/Block/file2']];
 
-        $className = '\Magento\Migration\Code\ModuleMigration\ModuleFileCopier';
-        $moduleFileCopier = $this->getMockBuilder($className)->disableOriginalConstructor()->getMock();
+        $moduleFileCopier = $this->getMockBuilder(ModuleFileCopier::class)->disableOriginalConstructor()->getMock();
 
-        $className = '\Magento\Migration\Code\ModuleMigration\ModuleFileExtractor';
-        $moduleFileExtractor = $this->getMockBuilder($className)->disableOriginalConstructor()->getMock();
+        $moduleFileExtractor = $this->getMockBuilder(ModuleFileExtractor::class)->disableOriginalConstructor()->getMock();
 
-        $className = '\Magento\Migration\Utility\M1\ModuleEnablerConfig';
-        $moduleEnablerConfigFactory = $this->getMockBuilder($className)->disableOriginalConstructor()->getMock();
+        $moduleEnablerConfigFactory = $this->getMockBuilder(ModuleEnablerConfig::class)->disableOriginalConstructor()->getMock();
 
         $this->moduleFileExtractorFactory->expects($this->atLeastOnce())
             ->method('create')
@@ -186,7 +187,7 @@ class ModuleMigrationTest extends \PHPUnit\Framework\TestCase
      * @return array
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
-    public function moveModuleFilesProvider()
+    public function moveModuleFilesProvider(): array
     {
         return [
             [

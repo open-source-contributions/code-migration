@@ -5,7 +5,11 @@
  */
 namespace Magento\Migration\Code;
 
-class ClassMappingTest extends \PHPUnit\Framework\TestCase
+use Magento\Migration\Logger\Logger;
+use Magento\Migration\Mapping\ClassMapping;
+use PHPUnit\Framework\TestCase;
+
+class ClassMappingTest extends TestCase
 {
     /**
      * @var \Magento\Migration\Mapping\ClassMapping
@@ -17,17 +21,17 @@ class ClassMappingTest extends \PHPUnit\Framework\TestCase
      */
     protected $loggerMock;
 
-    public function setUp()
+    protected function setUp(): void
     {
-        $this->loggerMock = $this->getMockBuilder('\Magento\Migration\Logger\Logger')
+        $this->loggerMock = $this->getMockBuilder(Logger::class)
             ->disableOriginalConstructor()->getMock();
 
-        $this->obj = new \Magento\Migration\Mapping\ClassMapping(
+        $this->obj = new ClassMapping(
             $this->loggerMock
         );
     }
 
-    public function testMapM1Class()
+    public function testMapM1Class(): void
     {
         $this->assertEquals("\\Magento\\Backend\\Helper\\Data", $this->obj->mapM1Class('Mage_Admin_Helper_Data'));
         $this->assertEquals(

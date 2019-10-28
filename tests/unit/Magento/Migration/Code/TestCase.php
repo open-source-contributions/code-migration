@@ -15,19 +15,20 @@ use Magento\Migration\Code\Processor\TokenArgumentCollectionFactory;
 use Magento\Migration\Code\Processor\TokenArgumentFactory;
 use Magento\Migration\Code\Processor\TokenHelper;
 use Magento\Migration\Logger\Logger;
+use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 use PHPUnit_Framework_MockObject_MockObject;
 
-class TestCase extends \PHPUnit\Framework\TestCase
+class TestCase extends PHPUnitTestCase
 {
     /**
      * @param Logger $loggerMock
      * @return TokenHelper
      */
-    public function setupTokenHelper(Logger $loggerMock)
+    public function setupTokenHelper(Logger $loggerMock): TokenHelper
     {
         /** @var ArgumentFactory|PHPUnit_Framework_MockObject_MockObject $argumentFactoryMock */
         $argumentFactoryMock = $this->getMockBuilder(
-            '\Magento\Migration\Code\Processor\Mage\MageFunction\ArgumentFactory'
+            ArgumentFactory::class
         )->setMethods(['create'])
             ->getMock();
         $argumentFactoryMock->expects($this->any())
@@ -40,7 +41,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
         /** @var TokenArgumentFactory|PHPUnit_Framework_MockObject_MockObject $tokenFactoryMock */
         $tokenFactoryMock = $this->getMockBuilder(
-            '\Magento\Migration\Code\Processor\TokenArgumentFactory'
+            TokenArgumentFactory::class
         )->setMethods(['create'])
             ->getMock();
         $tokenFactoryMock->expects($this->any())
@@ -53,7 +54,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
         /** @var TokenArgumentCollectionFactory|PHPUnit_Framework_MockObject_MockObject $tokenCollectionFactoryMock */
         $tokenCollectionFactoryMock = $this->getMockBuilder(
-            '\Magento\Migration\Code\Processor\TokenArgumentCollectionFactory'
+            TokenArgumentCollectionFactory::class
         )->setMethods(['create'])
             ->getMock();
         $tokenCollectionFactoryMock->expects($this->any())
@@ -66,7 +67,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
         /** @var CallArgumentCollectionFactory|PHPUnit_Framework_MockObject_MockObject $callCollectionFactoryMock */
         $callCollectionFactoryMock = $this->getMockBuilder(
-            '\Magento\Migration\Code\Processor\CallArgumentCollectionFactory'
+            CallArgumentCollectionFactory::class
         )->setMethods(['create'])
             ->getMock();
         $callCollectionFactoryMock->expects($this->any())
