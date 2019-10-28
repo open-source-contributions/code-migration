@@ -22,7 +22,7 @@ class AliasTest extends \PHPUnit\Framework\TestCase
      */
     protected $loggerMock;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->contextMock = $this->getMockBuilder(
             '\Magento\Migration\Mapping\Context'

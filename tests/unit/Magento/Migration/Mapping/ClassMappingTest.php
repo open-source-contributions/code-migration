@@ -17,7 +17,7 @@ class ClassMappingTest extends \PHPUnit\Framework\TestCase
      */
     protected $loggerMock;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->loggerMock = $this->getMockBuilder('\Magento\Migration\Logger\Logger')
             ->disableOriginalConstructor()->getMock();
@@ -27,7 +27,7 @@ class ClassMappingTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testMapM1Class()
+    public function testMapM1Class(): void
     {
         $this->assertEquals("\\Magento\\Backend\\Helper\\Data", $this->obj->mapM1Class('Mage_Admin_Helper_Data'));
         $this->assertEquals(
